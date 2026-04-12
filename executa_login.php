@@ -34,13 +34,14 @@ if(!strcmp($senha, $usuario->getSenha()))
     // TUDO OK! Agora, passa os dados para a sessão e redireciona o usuário 
     $_SESSION["id_usuario"] = $usuario->getId(); 
     $_SESSION["nome_usuario"] = stripslashes($usuario->getNome());
+    $_SESSION["mensagem"] = "Login realizado com sucesso! Bem-vindo " . $_SESSION["nome_usuario"]. "!";
     unset($_SESSION["erro"]); // Remove qualquer mensagem de erro anterior
     //$_SESSION["permissao"]= $dados["postar"]; 
     header("Location: index.php"); 
     exit; 
 } else {
     // Senha incorreta
-    $_SESSION["erro"] = "Senha incorreta!"; 
+    $_SESSION["erro"] = "Senha ou login incorretos!"; 
     header("Location: login.php"); 
     exit; 
 }

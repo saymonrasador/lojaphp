@@ -1,5 +1,11 @@
 <?php
 include_once "layout_header.php";
+include_once "comum.php";
+
+if (is_session_started() === FALSE) {
+    session_start();
+}
+
 $page_title = "Autenticação Obrigatória para acessar Veículos";
 ?>
 
@@ -9,6 +15,25 @@ $page_title = "Autenticação Obrigatória para acessar Veículos";
             <div>
                 <h2>Bem-vindo</h2>
                 <p>Acesse sua conta</p>
+            </div>
+
+            <div id="mensagens">
+            <?php
+                // Exibe mensagens de erro se houver
+                if(isset($_SESSION["erro"]) && !empty($_SESSION["erro"])) {
+                    echo "<div style='color: red;'><strong>Erro:</strong><br>";
+                    echo htmlspecialchars($_SESSION["erro"]);
+                    echo "</div>";
+                    unset($_SESSION["erro"]);
+                }
+                // Exibe mensagens de sucesso se houver
+                if(isset($_SESSION["mensagem"]) && !empty($_SESSION["mensagem"])) {
+                    echo "<div style='color: green;'><strong>Sucesso:</strong><br>";
+                    echo htmlspecialchars($_SESSION["mensagem"]);
+                    echo "</div>";
+                    unset($_SESSION["mensagem"]);
+                }
+            ?>
             </div>
 
             <form action="executa_login.php" method="POST">
@@ -31,3 +56,4 @@ $page_title = "Autenticação Obrigatória para acessar Veículos";
         </div>
     </div>
 </main>
+

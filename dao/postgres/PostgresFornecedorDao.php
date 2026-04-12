@@ -23,7 +23,7 @@ class PostgresFornecedorDao extends PostgresDAO implements FornecedorDao {
         return $stmt->execute();
     }
 
-    public function altera($fornecedor) {
+    public function altera(&$fornecedor) {
         $query = "UPDATE {$this->table_name}
                   SET nome = :nome,
                       descricao = :descricao,
@@ -51,7 +51,9 @@ class PostgresFornecedorDao extends PostgresDAO implements FornecedorDao {
 
         return $stmt->execute();
     }
-
+    public function remove($fornecedor) {
+        return $this->removePorId($fornecedor->getId());
+    }
     public function buscaPorId($id) {
         $query = "SELECT * FROM {$this->table_name} WHERE id = ?";
         $stmt = $this->conn->prepare($query);
