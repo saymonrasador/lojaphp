@@ -1,0 +1,95 @@
+/* === ESTOQUE PAGE === */
+
+/* Status badges */
+.badge-ok {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-baixo {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-zerado {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Resumo cards */
+.estoque-resumo {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.estoque-card {
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 16px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    min-width: 140px;
+    text-align: center;
+}
+
+.estoque-card .valor {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3277;
+}
+
+.estoque-card .label {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.estoque-card.alerta .valor {
+    color: #e74c3c;
+}
+
+/* Botão entrada/saída */
+.btn-entrada {
+    background-color: #27ae60;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-entrada:hover {
+    background-color: #1e8449;
+}
+
+.btn-saida {
+    background-color: #e67e22;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-saida:hover {
+    background-color: #ca6f1e;
+}

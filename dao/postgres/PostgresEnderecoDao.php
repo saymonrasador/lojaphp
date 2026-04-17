@@ -36,6 +36,32 @@ class PostgresEnderecoDao extends PostgresDAO implements EnderecoDao {
         }
     }
 
+    public function insereRetornaId($endereco) {
+        $query = "INSERT INTO " . $this->table_name .
+        " (rua, numero, complemento, bairro, cep, cidade, estado) VALUES" .
+        " (:rua, :numero, :complemento, :bairro, :cep, :cidade, :estado) RETURNING id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(":rua", $endereco->getRua());
+        $stmt->bindValue(":numero", $endereco->getNumero());
+        $stmt->bindValue(":complemento", $endereco->getComplemento());
+        $stmt->bindValue(":bairro", $endereco->getBairro());
+        $stmt->bindValue(":cep", $endereco->getCep());
+        $stmt->bindValue(":cidade", $endereco->getCidade());
+        $stmt->bindValue(":estado", $endereco->getEstado());
+
+        try {
+            if ($stmt->execute()) {
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $row ? (int)$row['id'] : null;
+            }
+            return null;
+        } catch (PDOException $e) {
+            error_log("Exception ao inserir endereço (retorna id): " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function removePorId($id) {
         $query = "DELETE FROM " . $this->table_name . 
         " WHERE id = :id";

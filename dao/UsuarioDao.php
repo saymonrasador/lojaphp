@@ -7,6 +7,7 @@ interface UsuarioDao {
     public function altera(&$usuario);
     public function buscaPorId($id);
     public function buscaPorLogin($login);
+    public function buscaPorNome($nome);
     public function buscaTodos();
 }
 ?>

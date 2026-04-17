@@ -1,0 +1,55 @@
+/* === INDEX / HOME PAGE === */
+main section:first-child {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+main section:first-child h2 {
+    color: #2d3277;
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+main section:first-child p {
+    color: #333;
+    font-size: 15px;
+}
+
+main section:nth-child(2) {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+main section:nth-child(2) h3 {
+    color: #2d3277;
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+main section:nth-child(2) p {
+    margin-bottom: 10px;
+}
+
+main section:nth-child(2) button {
+    width: 260px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #2d3277;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+main section:nth-child(2) button:hover {
+    background-color: #1a1f5e;
+}
+
+

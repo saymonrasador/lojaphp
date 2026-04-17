@@ -66,6 +66,43 @@ class PostgresEstoqueDao extends PostgresDAO implements EstoqueDao {
         return $lista;
     }
 
+    public function buscaTodosComProduto() {
+        $query = "SELECT e.id, e.produto_id, e.quantidade, e.preco, p.nome AS produto_nome
+                  FROM {$this->table_name} e
+                  INNER JOIN produtos p ON p.id = e.produto_id
+                  ORDER BY p.nome ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        $lista = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $e = new Estoque($row['id'], $row['produto_id'], $row['quantidade'], $row['preco']);
+            $e->setProdutoNome($row['produto_nome']);
+            $lista[] = $e;
+        }
+        return $lista;
+    }
+
+    public function buscaPorNomeProduto($nome) {
+        $query = "SELECT e.id, e.produto_id, e.quantidade, e.preco, p.nome AS produto_nome
+                  FROM {$this->table_name} e
+                  INNER JOIN produtos p ON p.id = e.produto_id
+                  WHERE p.nome ILIKE ?
+                  ORDER BY p.nome ASC";
+        $stmt = $this->conn->prepare($query);
+        $busca = "%$nome%";
+        $stmt->bindParam(1, $busca);
+        $stmt->execute();
+
+        $lista = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $e = new Estoque($row['id'], $row['produto_id'], $row['quantidade'], $row['preco']);
+            $e->setProdutoNome($row['produto_nome']);
+            $lista[] = $e;
+        }
+        return $lista;
+    }
+
     public function removePorId($id) {
         $query = "DELETE FROM {$this->table_name} WHERE id = ?";
         $stmt = $this->conn->prepare($query);

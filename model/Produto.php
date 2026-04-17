@@ -8,7 +8,7 @@ class Produto
     private $foto; // dados binários (bytes da imagem)
     private $fornecedor; // objeto Fornecedor
 
-    public function __construct($id, $nome, $descricao, $foto, Fornecedor $fornecedor)
+    public function __construct($id = null, $nome = null, $descricao = null, $foto = null, Fornecedor $fornecedor = null)
     {
         $this->id = $id;
         $this->nome = $nome;

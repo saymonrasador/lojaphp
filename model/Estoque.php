@@ -6,8 +6,9 @@ class Estoque
     private $produto_id;
     private $quantidade;
     private $preco;
+    private $produto_nome; // campo extra para joins
 
-    public function __construct($id, $produto_id, $quantidade, $preco)
+    public function __construct($id = null, $produto_id = null, $quantidade = null, $preco = null)
     {
         $this->id = $id;
         $this->produto_id = $produto_id;
@@ -26,4 +27,7 @@ class Estoque
 
     public function getPreco() { return $this->preco; }
     public function setPreco($preco) { $this->preco = $preco; }
+
+    public function getProdutoNome() { return $this->produto_nome; }
+    public function setProdutoNome($nome) { $this->produto_nome = $nome; }
 }

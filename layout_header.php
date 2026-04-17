@@ -6,6 +6,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Loja Virtual</title>
+	<link rel="stylesheet" href="libs/css/global.css">
+	<?php if (isset($page_css)): ?>
+		<?php foreach ((array)$page_css as $css): ?>
+			<link rel="stylesheet" href="<?php echo $css; ?>">
+		<?php endforeach; ?>
+	<?php endif; ?>
 </head>
 
 <body>
@@ -26,8 +32,14 @@
 			
 			if(isset($_SESSION["nome_usuario"])) {
 				// Informações de login
+				echo "<a href='usuarios.php'><button>Usuários</button></a> ";
+				echo "<a href='fornecedores.php'><button>Fornecedores</button></a> ";
+				echo "<a href='produtos.php'><button>Produtos</button></a> ";
+				echo "<a href='estoque.php'><button>Estoque</button></a>";
+				echo "</nav>";
 				echo "<span>Logado como: <strong>" . $_SESSION["nome_usuario"] . "</strong>";		
 				echo "<a href='executa_logout.php'> Logout </a></span>";
+				echo "<nav>";
 			} else {
 				echo "<span>";
 				echo "<a href='login.php'> Login </a>";

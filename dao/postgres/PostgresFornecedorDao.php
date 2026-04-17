@@ -89,6 +89,8 @@ class PostgresFornecedorDao extends PostgresDAO implements FornecedorDao {
             $f->setId($row['id']);
             $f->setNome($row['nome']);
             $f->setDescricao($row['descricao']);
+            $f->setTelefone($row['telefone']);
+            $f->setEmail($row['email']);
             $lista[] = $f;
         }
 
@@ -107,6 +109,8 @@ class PostgresFornecedorDao extends PostgresDAO implements FornecedorDao {
             $f->setId($row['id']);
             $f->setNome($row['nome']);
             $f->setDescricao($row['descricao']);
+            $f->setTelefone($row['telefone']);
+            $f->setEmail($row['email']);
             $lista[] = $f;
         }
 

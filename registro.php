@@ -1,4 +1,5 @@
 <?php
+$page_css = ['libs/css/registro.css'];
 include_once "layout_header.php";
 $page_title = "Criar Nova Conta";
 ?>

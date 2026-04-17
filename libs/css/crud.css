@@ -1,0 +1,117 @@
+/* === CRUD PAGES (usuarios, fornecedores, produtos) === */
+
+/* Card wrapper for form & search sections */
+main > h2 {
+    margin-bottom: 6px;
+}
+
+main > p > a {
+    color: #2d3277;
+    font-size: 14px;
+}
+
+/* Success / Error messages */
+main > p > strong {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+/* Form section */
+form {
+    background-color: #fff;
+    padding: 20px 24px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin-bottom: 10px;
+}
+
+form label {
+    margin-bottom: 10px;
+}
+
+form label input,
+form label select {
+    margin-top: 4px;
+}
+
+form button[type="submit"] {
+    background-color: #ffe600;
+    color: #333;
+    font-weight: 700;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+form button[type="submit"]:hover {
+    background-color: #f5d800;
+}
+
+form button[type="button"] {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 6px;
+}
+
+form button[type="button"]:hover {
+    background-color: #ccc;
+}
+
+/* Search section */
+form[action*="?"] button[type="submit"],
+form button[type="submit"].buscar {
+    background-color: #2d3277;
+    color: #fff;
+}
+
+/* Table actions */
+table td:last-child {
+    white-space: nowrap;
+}
+
+table td a {
+    margin: 0 2px;
+}
+
+/* === FORM GROUP === */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #444;
+}
+
+/* === FIELD ERROR STYLES === */
+.campo-erro input,
+.campo-erro select,
+.campo-erro textarea {
+    border: 2px solid #e74c3c;
+    background-color: #fef2f2;
+}
+
+.campo-erro input:focus,
+.campo-erro select:focus {
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+}
+
+.erro-campo {
+    display: block;
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}

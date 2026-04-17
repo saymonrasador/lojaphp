@@ -9,7 +9,7 @@ class Fornecedor
     private $email;
     private $endereco; // objeto Endereco
 
-    public function __construct($id, $nome, $descricao, $telefone, $email, Endereco $endereco)
+    public function __construct($id = null, $nome = null, $descricao = null, $telefone = null, $email = null, Endereco $endereco = null)
     {
         $this->id = $id;
         $this->nome = $nome;
