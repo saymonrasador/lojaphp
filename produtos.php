@@ -7,8 +7,6 @@ $fornecedorDao = $factory->getFornecedorDao();
 $mensagem = "";
 $erro = "";
 $produtoEditar = null;
-$erros_campo = [];
-$form_data = [];
 
 // --- POST: Inserir ou Alterar ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,46 +15,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descricao    = trim($_POST['descricao'] ?? '');
     $fornecedor_id = isset($_POST['fornecedor_id']) && $_POST['fornecedor_id'] !== '' ? (int)$_POST['fornecedor_id'] : null;
 
-    $erros_validacao = [];
-    if (!$nome) $erros_validacao['nome'] = "O campo Nome é obrigatório!";
-    if (!$descricao) $erros_validacao['descricao'] = "O campo Descrição é obrigatório!";
-    if (!$fornecedor_id) $erros_validacao['fornecedor_id'] = "Selecione um Fornecedor!";
-
-    if (!empty($erros_validacao)) {
-        $_SESSION['erros_campo_produto'] = $erros_validacao;
-        $_SESSION['form_data_produto'] = ['id' => $id, 'nome' => $nome, 'descricao' => $descricao, 'fornecedor_id' => $fornecedor_id];
-        if ($id !== null) {
-            header("Location: produtos.php?acao=editar&id=$id");
-        } else {
-            header("Location: produtos.php");
-        }
-        exit;
-    }
-
-    $fornecedor = $fornecedorDao->buscaPorId($fornecedor_id);
-    if (!$fornecedor) {
-        $_SESSION['erro_produto'] = "Fornecedor não encontrado.";
+    if (!$nome || !$fornecedor_id) {
+        $_SESSION['erro_produto'] = "Nome e Fornecedor são obrigatórios!";
     } else {
-        if ($id === null) {
-            $produto = new Produto(null, $nome, $descricao, null, $fornecedor);
-            if ($dao->insere($produto)) {
-                $_SESSION['mensagem_produto'] = "Produto cadastrado com sucesso!";
-            } else {
-                $_SESSION['erro_produto'] = "Erro ao cadastrar produto.";
-            }
+        $fornecedor = $fornecedorDao->buscaPorId($fornecedor_id);
+        if (!$fornecedor) {
+            $_SESSION['erro_produto'] = "Fornecedor não encontrado.";
         } else {
-            $produto = $dao->buscaPorId($id);
-            if ($produto) {
-                $produto->setNome($nome);
-                $produto->setDescricao($descricao);
-                $produto->setFornecedor($fornecedor);
-                if ($dao->altera($produto)) {
-                    $_SESSION['mensagem_produto'] = "Produto alterado com sucesso!";
+            if ($id === null) {
+                $produto = new Produto(null, $nome, $descricao, null, $fornecedor);
+                if ($dao->insere($produto)) {
+                    $_SESSION['mensagem_produto'] = "Produto cadastrado com sucesso!";
                 } else {
-                    $_SESSION['erro_produto'] = "Erro ao alterar produto.";
+                    $_SESSION['erro_produto'] = "Erro ao cadastrar produto.";
                 }
             } else {
-                $_SESSION['erro_produto'] = "Produto não encontrado.";
+                $produto = $dao->buscaPorId($id);
+                if ($produto) {
+                    $produto->setNome($nome);
+                    $produto->setDescricao($descricao);
+                    $produto->setFornecedor($fornecedor);
+                    if ($dao->altera($produto)) {
+                        $_SESSION['mensagem_produto'] = "Produto alterado com sucesso!";
+                    } else {
+                        $_SESSION['erro_produto'] = "Erro ao alterar produto.";
+                    }
+                } else {
+                    $_SESSION['erro_produto'] = "Produto não encontrado.";
+                }
             }
         }
     }
@@ -107,31 +93,9 @@ if (isset($_SESSION['erro_produto'])) {
     $erro = $_SESSION['erro_produto'];
     unset($_SESSION['erro_produto']);
 }
-if (isset($_SESSION['erros_campo_produto'])) {
-    $erros_campo = $_SESSION['erros_campo_produto'];
-    unset($_SESSION['erros_campo_produto']);
-}
-if (isset($_SESSION['form_data_produto'])) {
-    $form_data = $_SESSION['form_data_produto'];
-    unset($_SESSION['form_data_produto']);
-}
 
 // Lista de fornecedores para o select
 $todosFornecedores = $fornecedorDao->buscaTodos();
-
-// Helper
-function valP($campo, $produtoEditar, $form_data) {
-    if (!empty($form_data) && isset($form_data[$campo])) return $form_data[$campo] ?? '';
-    if ($produtoEditar) {
-        switch ($campo) {
-            case 'nome': return $produtoEditar->getNome();
-            case 'descricao': return $produtoEditar->getDescricao();
-            case 'fornecedor_id': return $produtoEditar->getFornecedor() ? $produtoEditar->getFornecedor()->getId() : '';
-        }
-    }
-    return '';
-}
-$isEdit = $produtoEditar || (!empty($form_data) && isset($form_data['id']) && $form_data['id']);
 ?>
 <?php $page_css = ['libs/css/crud.css']; include_once "layout_header.php"; ?>
 
@@ -141,54 +105,34 @@ $isEdit = $produtoEditar || (!empty($form_data) && isset($form_data['id']) && $f
 <p><a href="index.php">« Voltar ao Início</a></p>
 
 <?php if ($mensagem): ?>
-    <p class="msg-sucesso"><?php echo htmlspecialchars($mensagem); ?></p>
+    <p><strong><?php echo htmlspecialchars($mensagem); ?></strong></p>
 <?php endif; ?>
 <?php if ($erro): ?>
-    <p class="msg-erro"><?php echo htmlspecialchars($erro); ?></p>
+    <p><strong>Erro: <?php echo htmlspecialchars($erro); ?></strong></p>
 <?php endif; ?>
 
 <hr>
-<h3><?php echo $isEdit ? 'Alterar Produto' : 'Novo Produto'; ?></h3>
+<h3><?php echo $produtoEditar ? 'Alterar Produto' : 'Novo Produto'; ?></h3>
 <form method="POST" action="produtos.php">
     <?php if ($produtoEditar): ?>
         <input type="hidden" name="id" value="<?php echo $produtoEditar->getId(); ?>">
-    <?php elseif (!empty($form_data) && $form_data['id']): ?>
-        <input type="hidden" name="id" value="<?php echo (int)$form_data['id']; ?>">
     <?php endif; ?>
 
-    <div class="form-group <?php echo isset($erros_campo['nome']) ? 'campo-erro' : ''; ?>">
-        <label for="p_nome">Nome:</label>
-        <input type="text" id="p_nome" name="nome" value="<?php echo htmlspecialchars(valP('nome', $produtoEditar, $form_data)); ?>">
-        <?php if (isset($erros_campo['nome'])): ?>
-            <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['nome']); ?></span>
-        <?php endif; ?>
-    </div>
-
-    <div class="form-group <?php echo isset($erros_campo['descricao']) ? 'campo-erro' : ''; ?>">
-        <label for="p_descricao">Descrição:</label>
-        <input type="text" id="p_descricao" name="descricao" value="<?php echo htmlspecialchars(valP('descricao', $produtoEditar, $form_data)); ?>">
-        <?php if (isset($erros_campo['descricao'])): ?>
-            <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['descricao']); ?></span>
-        <?php endif; ?>
-    </div>
-
-    <div class="form-group <?php echo isset($erros_campo['fornecedor_id']) ? 'campo-erro' : ''; ?>">
-        <label for="p_fornecedor">Fornecedor:</label>
-        <select id="p_fornecedor" name="fornecedor_id">
+    <label>Nome: <input type="text" name="nome" value="<?php echo htmlspecialchars($produtoEditar ? $produtoEditar->getNome() : ''); ?>" required></label><br><br>
+    <label>Descrição: <input type="text" name="descricao" value="<?php echo htmlspecialchars($produtoEditar ? $produtoEditar->getDescricao() : ''); ?>"></label><br><br>
+    <label>Fornecedor:
+        <select name="fornecedor_id" required>
             <option value="">-- Selecione --</option>
             <?php foreach ($todosFornecedores as $f): ?>
                 <option value="<?php echo $f->getId(); ?>"
-                    <?php echo (valP('fornecedor_id', $produtoEditar, $form_data) == $f->getId()) ? 'selected' : ''; ?>>
+                    <?php echo ($produtoEditar && $produtoEditar->getFornecedor() && $produtoEditar->getFornecedor()->getId() == $f->getId()) ? 'selected' : ''; ?>>
                     <?php echo htmlspecialchars($f->getNome()); ?>
                 </option>
             <?php endforeach; ?>
         </select>
-        <?php if (isset($erros_campo['fornecedor_id'])): ?>
-            <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['fornecedor_id']); ?></span>
-        <?php endif; ?>
-    </div>
+    </label><br><br>
 
-    <button type="submit"><?php echo $isEdit ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
+    <button type="submit"><?php echo $produtoEditar ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
     <?php if ($produtoEditar): ?>
         <a href="produtos.php"><button type="button">Cancelar</button></a>
     <?php endif; ?>
@@ -196,50 +140,124 @@ $isEdit = $produtoEditar || (!empty($form_data) && isset($form_data['id']) && $f
 
 <hr>
 <h3>Consultar Produtos</h3>
-<form method="GET" action="produtos.php">
-    <input type="hidden" name="acao" value="buscar">
+<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
     <label>Buscar por:
-        <select name="tipo">
+        <select id="busca-tipo">
             <option value="nome">Nome</option>
             <option value="id">Código</option>
         </select>
     </label>
-    <input type="text" name="valor" placeholder="Digite o valor" required>
-    <button type="submit">Buscar</button>
-    <a href="produtos.php"><button type="button">Listar Todos</button></a>
-</form>
+    <input type="text" id="busca-valor" placeholder="Digite para filtrar..." style="min-width:200px;">
+    <button type="button" id="btn-limpar">Listar Todos</button>
+    <span id="busca-status" style="color:#888; font-size:0.9em;"></span>
+</div>
 
 <hr>
-<h3>Lista de Produtos <?php echo $buscaAtiva ? '(resultado da busca)' : ''; ?></h3>
-<?php if (empty($lista)): ?>
-    <p>Nenhum produto encontrado.</p>
-<?php else: ?>
-    <table border="1" cellpadding="5">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Fornecedor</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($lista as $p): ?>
-            <tr>
-                <td><?php echo $p->getId(); ?></td>
-                <td><?php echo htmlspecialchars($p->getNome()); ?></td>
-                <td><?php echo htmlspecialchars($p->getDescricao()); ?></td>
-                <td><?php echo $p->getFornecedor() ? htmlspecialchars($p->getFornecedor()->getNome()) : '-'; ?></td>
-                <td>
-                    <a href="produtos.php?acao=editar&id=<?php echo $p->getId(); ?>">Editar</a>
-                    |
-                    <a href="produtos.php?acao=deletar&id=<?php echo $p->getId(); ?>"
-                       onclick="return confirm('Confirma a exclusão do produto <?php echo addslashes($p->getNome()); ?>?')">Excluir</a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
+<h3>Lista de Produtos</h3>
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Fornecedor</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="tabela-produtos-body">
+    <?php foreach ($lista as $p): ?>
+        <tr>
+            <td><?php echo $p->getId(); ?></td>
+            <td><?php echo htmlspecialchars($p->getNome()); ?></td>
+            <td><?php echo htmlspecialchars($p->getDescricao()); ?></td>
+            <td><?php echo $p->getFornecedor() ? htmlspecialchars($p->getFornecedor()->getNome()) : '-'; ?></td>
+            <td>
+                <a href="produtos.php?acao=editar&id=<?php echo $p->getId(); ?>">Editar</a>
+                |
+                <a href="produtos.php?acao=deletar&id=<?php echo $p->getId(); ?>"
+                   onclick="return confirm('Confirma a exclusão do produto <?php echo addslashes($p->getNome()); ?>?')">Excluir</a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    <?php if (empty($lista)): ?>
+        <tr><td colspan="5">Nenhum produto encontrado.</td></tr>
+    <?php endif; ?>
+    </tbody>
+</table>
+
+<script>
+(function () {
+    var inputValor  = document.getElementById('busca-valor');
+    var selectTipo  = document.getElementById('busca-tipo');
+    var tbody       = document.getElementById('tabela-produtos-body');
+    var btnLimpar   = document.getElementById('btn-limpar');
+    var statusEl    = document.getElementById('busca-status');
+    var debounceTimer = null;
+
+    function esc(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function renderTabela(dados) {
+        if (dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">Nenhum produto encontrado.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = dados.map(function (p) {
+            var nomeSafe = esc(p.nome).replace(/'/g, "\\'");
+            return '<tr>' +
+                '<td>' + esc(p.id) + '</td>' +
+                '<td>' + esc(p.nome) + '</td>' +
+                '<td>' + esc(p.descricao) + '</td>' +
+                '<td>' + esc(p.fornecedor) + '</td>' +
+                '<td>' +
+                    '<a href="produtos.php?acao=editar&id=' + esc(p.id) + '">Editar</a>' +
+                    ' | ' +
+                    '<a href="produtos.php?acao=deletar&id=' + esc(p.id) + '" ' +
+                        'onclick="return confirm(\'Confirma a exclusão do produto ' + nomeSafe + '?\')">Excluir</a>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    function buscar() {
+        var tipo  = selectTipo.value;
+        var valor = inputValor.value.trim();
+        statusEl.textContent = 'Buscando...';
+
+        fetch('ajax_busca_produtos.php?tipo=' + encodeURIComponent(tipo) + '&valor=' + encodeURIComponent(valor))
+            .then(function (res) { return res.json(); })
+            .then(function (dados) {
+                statusEl.textContent = '';
+                renderTabela(dados);
+            })
+            .catch(function () {
+                statusEl.textContent = 'Erro ao buscar.';
+            });
+    }
+
+    // Dispara automaticamente ao digitar (debounce de 300ms)
+    inputValor.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(buscar, 300);
+    });
+
+    // Refaz a busca ao trocar o tipo
+    selectTipo.addEventListener('change', function () {
+        if (inputValor.value.trim() !== '') {
+            buscar();
+        }
+    });
+
+    // Limpa e lista todos
+    btnLimpar.addEventListener('click', function () {
+        inputValor.value = '';
+        buscar();
+    });
+})();
+</script>
 </main>
