@@ -24,6 +24,6 @@ include_once "layout_header.php";
     <div class="carrinho-vazio" style="text-align:center; padding: 60px 20px;">
         <h2 style="color: green; font-size: 2em;">✅ Produto comprado!</h2>
         <p style="font-size: 1.2em; margin-top: 15px;">Obrigado pela sua compra, <strong><?php echo htmlspecialchars($_SESSION["nome_usuario"]); ?></strong>!</p>
-        <a href="loja.php" class="btn-continuar" style="display:inline-block; margin-top: 20px;">Continuar Comprando</a>
+        <a href="index.php" class="btn-continuar" style="display:inline-block; margin-top: 20px;">Continuar Comprando</a>
     </div>
 </main>

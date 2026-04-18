@@ -42,7 +42,7 @@ include_once "layout_header.php";
     <?php if (empty($carrinho)): ?>
         <div class="carrinho-vazio">
             <h3>Seu carrinho está vazio</h3>
-            <p>Adicione produtos a partir da <a href="loja.php">loja</a>.</p>
+            <p>Adicione produtos a partir da <a href="index.php">loja</a>.</p>
         </div>
     <?php else: ?>
         <table class="tabela-carrinho">
@@ -87,7 +87,7 @@ include_once "layout_header.php";
                 <form method="POST" action="carrinho.php" style="display:inline;">
                     <button type="submit" name="limpar" class="btn-limpar">Limpar Carrinho</button>
                 </form>
-                <a href="loja.php" class="btn-continuar">Continuar Comprando</a>
+                <a href="index.php" class="btn-continuar">Continuar Comprando</a>
                 <?php if (isset($_SESSION['id_usuario'])): ?>
                     <a href="finalizar_compra.php" class="btn-comprar" style="display:inline-block; padding: 10px 25px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Finalizar Pedido</a>
                 <?php else: ?>
