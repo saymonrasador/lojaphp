@@ -9,16 +9,16 @@ class PostgresClienteDao extends PostgresDAO implements ClienteDao {
 
     public function insere($cliente) {
         $query = "INSERT INTO {$this->table_name}
-                  (nome, telefone, email, cartao_credito_id, endereco_id)
-                  VALUES (:nome, :telefone, :email, :cartao_credito_id, :endereco_id)";
+                  (nome, telefone, email, cartao_credito, endereco_id)
+                  VALUES (:nome, :telefone, :email, :cartao_credito, :endereco_id)";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindValue(":nome", $cliente->getNome());
         $stmt->bindValue(":telefone", $cliente->getTelefone());
         $stmt->bindValue(":email", $cliente->getEmail());
-        $stmt->bindValue(":cartao_credito_id", $cliente->getCartaoCredito()?->getId());
-        $stmt->bindValue(":endereco_id", $cliente->getEndereco()?->getId());
+        $stmt->bindValue(":cartao_credito", $cliente->getCartaoCredito());
+        $stmt->bindValue(":endereco_id", $cliente->getEndereco() ? (is_object($cliente->getEndereco()) ? $cliente->getEndereco()->getId() : $cliente->getEndereco()) : null);
 
         return $stmt->execute();
     }
@@ -37,7 +37,10 @@ class PostgresClienteDao extends PostgresDAO implements ClienteDao {
             $c->setNome($row['nome']);
             $c->setTelefone($row['telefone']);
             $c->setEmail($row['email']);
-            $c->setCartaoCredito($row['cartao_credito_id']);
+            $c->setCartaoCredito($row['cartao_credito']);
+            if (!empty($row['endereco_id'])) {
+                $c->setEndereco($row['endereco_id']);
+            }
             return $c;
         }
         return null;
@@ -75,7 +78,7 @@ class PostgresClienteDao extends PostgresDAO implements ClienteDao {
             $c->setNome($row['nome']);
             $c->setTelefone($row['telefone']);
             $c->setEmail($row['email']);
-            $c->setCartaoCredito($row['cartao_credito_id']);
+            $c->setCartaoCredito($row['cartao_credito']);
             return $c;
         }
         return null;
@@ -94,7 +97,7 @@ class PostgresClienteDao extends PostgresDAO implements ClienteDao {
             $c->setNome($row['nome']);
             $c->setTelefone($row['telefone']);
             $c->setEmail($row['email']);
-            $c->setCartaoCredito($row['cartao_credito_id']);
+            $c->setCartaoCredito($row['cartao_credito']);
             $lista[] = $c;
         }
         return $lista;
@@ -113,7 +116,7 @@ class PostgresClienteDao extends PostgresDAO implements ClienteDao {
 
     public function altera(&$cliente) {
         $query = "UPDATE {$this->table_name} 
-                  SET nome = :nome, telefone = :telefone, email = :email, cartao_credito_id = :cartao_credito_id, endereco_id = :endereco_id
+                  SET nome = :nome, telefone = :telefone, email = :email, cartao_credito = :cartao_credito, endereco_id = :endereco_id
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
@@ -121,8 +124,8 @@ class PostgresClienteDao extends PostgresDAO implements ClienteDao {
         $stmt->bindValue(":nome", $cliente->getNome());
         $stmt->bindValue(":telefone", $cliente->getTelefone());
         $stmt->bindValue(":email", $cliente->getEmail());
-        $stmt->bindValue(":cartao_credito_id", $cliente->getCartaoCredito()?->getId());
-        $stmt->bindValue(":endereco_id", $cliente->getEndereco()?->getId());
+        $stmt->bindValue(":cartao_credito", $cliente->getCartaoCredito());
+        $stmt->bindValue(":endereco_id", $cliente->getEndereco() ? (is_object($cliente->getEndereco()) ? $cliente->getEndereco()->getId() : $cliente->getEndereco()) : null);
         $stmt->bindValue(":id", $cliente->getId());
 
         return $stmt->execute();

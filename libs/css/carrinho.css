@@ -1,0 +1,157 @@
+.carrinho-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.carrinho-container h2 {
+    margin-bottom: 20px;
+    color: #2d3277;
+}
+
+.carrinho-vazio {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.carrinho-vazio h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.carrinho-vazio a {
+    color: #2d3277;
+    font-weight: bold;
+}
+
+.tabela-carrinho {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.tabela-carrinho th {
+    background: #2d3277;
+    color: #fff;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.tabela-carrinho td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.tabela-carrinho tr:last-child td {
+    border-bottom: none;
+}
+
+.form-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-qtd {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.btn-atualizar {
+    padding: 6px 12px;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-atualizar:hover {
+    background: #2980b9;
+}
+
+.btn-remover {
+    padding: 6px 12px;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-remover:hover {
+    background: #c0392b;
+}
+
+.carrinho-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.total {
+    font-size: 22px;
+    color: #2d3277;
+}
+
+.acoes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-limpar {
+    padding: 10px 20px;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-limpar:hover {
+    background: #c0392b;
+}
+
+.btn-continuar {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #ffe600;
+    color: #333 !important;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none !important;
+}
+
+.btn-continuar:hover {
+    background: #ffd000;
+}
+
+@media (max-width: 600px) {
+    .tabela-carrinho th, .tabela-carrinho td {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+    .carrinho-footer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+}

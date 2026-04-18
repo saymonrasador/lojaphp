@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome  = trim($_POST['nome'] ?? '');
     $login = trim($_POST['login'] ?? '');
     $senha = trim($_POST['senha'] ?? '');
-    $perfil = trim($_POST['perfil'] ?? 'INTERNO');
 
     $erros_validacao = [];
     if (!$nome) $erros_validacao['nome'] = "O campo Nome é obrigatório!";
@@ -25,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($erros_validacao)) {
         $_SESSION['erros_campo_usuario'] = $erros_validacao;
-        $_SESSION['form_data_usuario'] = ['id' => $id, 'nome' => $nome, 'login' => $login, 'perfil' => $perfil];
+        $_SESSION['form_data_usuario'] = ['id' => $id, 'nome' => $nome, 'login' => $login];
         if ($id !== null) {
             header("Location: usuarios.php?acao=editar&id=$id");
         } else {
@@ -38,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $loginExistente = $dao->buscaPorLogin($login);
         if ($loginExistente) {
             $_SESSION['erros_campo_usuario'] = ['login' => 'Este login já está em uso!'];
-            $_SESSION['form_data_usuario'] = ['id' => null, 'nome' => $nome, 'login' => $login, 'perfil' => $perfil];
+            $_SESSION['form_data_usuario'] = ['id' => null, 'nome' => $nome, 'login' => $login];
             header("Location: usuarios.php");
             exit;
         }
         $senhaHash = md5($senha);
-        $usuario = new Usuario(null, $nome, $login, $senhaHash, $perfil);
+        $usuario = new Usuario(null, $nome, $login, $senhaHash);
         if ($dao->insere($usuario)) {
             $_SESSION['mensagem_usuario'] = "Usuário cadastrado com sucesso!";
         } else {
@@ -54,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($usuario) {
             $usuario->setNome($nome);
             $usuario->setLogin($login);
-            $usuario->setPerfil($perfil);
             if ($senha) {
                 $usuario->setSenha(md5($senha));
             }
@@ -132,19 +130,16 @@ function valU($campo, $usuarioEditar, $form_data) {
         switch ($campo) {
             case 'nome': return $usuarioEditar->getNome();
             case 'login': return $usuarioEditar->getLogin();
-            case 'perfil': return $usuarioEditar->getPerfil();
         }
     }
     return '';
 }
 $isEdit = $usuarioEditar || (!empty($form_data) && isset($form_data['id']) && $form_data['id']);
+$abrirModal = $isEdit || !empty($erros_campo);
 ?>
 <?php $page_css = ['libs/css/crud.css']; include_once "layout_header.php"; ?>
 
-<main>
-<h2>Cadastro de Usuários</h2>
-
-<p><a href="index.php">« Voltar ao Início</a></p>
+<main class="crud-main">
 
 <?php if ($mensagem): ?>
     <p class="msg-sucesso"><?php echo htmlspecialchars($mensagem); ?></p>
@@ -153,100 +148,126 @@ $isEdit = $usuarioEditar || (!empty($form_data) && isset($form_data['id']) && $f
     <p class="msg-erro"><?php echo htmlspecialchars($erro); ?></p>
 <?php endif; ?>
 
-<hr>
-<h3><?php echo $isEdit ? 'Alterar Usuário' : 'Novo Usuário'; ?></h3>
-<form method="POST" action="usuarios.php">
-    <?php if ($usuarioEditar): ?>
-        <input type="hidden" name="id" value="<?php echo $usuarioEditar->getId(); ?>">
-    <?php elseif (!empty($form_data) && $form_data['id']): ?>
-        <input type="hidden" name="id" value="<?php echo (int)$form_data['id']; ?>">
-    <?php endif; ?>
-
-    <div class="form-group <?php echo isset($erros_campo['nome']) ? 'campo-erro' : ''; ?>">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars(valU('nome', $usuarioEditar, $form_data)); ?>">
-        <?php if (isset($erros_campo['nome'])): ?>
-            <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['nome']); ?></span>
-        <?php endif; ?>
-    </div>
-
-    <div class="form-group <?php echo isset($erros_campo['login']) ? 'campo-erro' : ''; ?>">
-        <label for="login">Login:</label>
-        <input type="text" id="login" name="login" value="<?php echo htmlspecialchars(valU('login', $usuarioEditar, $form_data)); ?>">
-        <?php if (isset($erros_campo['login'])): ?>
-            <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['login']); ?></span>
-        <?php endif; ?>
-    </div>
-
-    <div class="form-group <?php echo isset($erros_campo['senha']) ? 'campo-erro' : ''; ?>">
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha">
-        <?php if ($isEdit): ?><small>(deixe em branco para manter a senha atual)</small><?php endif; ?>
-        <?php if (isset($erros_campo['senha'])): ?>
-            <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['senha']); ?></span>
-        <?php endif; ?>
-    </div>
-
-    <div class="form-group">
-        <label for="perfil">Perfil:</label>
-        <select id="perfil" name="perfil">
-            <option value="INTERNO" <?php echo (valU('perfil', $usuarioEditar, $form_data) !== 'ADMIN') ? 'selected' : ''; ?>>INTERNO</option>
-            <option value="ADMIN" <?php echo (valU('perfil', $usuarioEditar, $form_data) === 'ADMIN') ? 'selected' : ''; ?>>ADMIN</option>
-        </select>
-    </div>
-
-    <button type="submit"><?php echo $isEdit ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
-    <?php if ($usuarioEditar): ?>
-        <a href="usuarios.php"><button type="button">Cancelar</button></a>
-    <?php endif; ?>
-</form>
-
-<hr>
-<h3>Consultar Usuários</h3>
-<form method="GET" action="usuarios.php">
-    <input type="hidden" name="acao" value="buscar">
-    <label>Buscar por:
-        <select name="tipo">
+<div class="crud-topbar">
+    <h2>Usuários</h2>
+    <div class="crud-filters">
+        <select id="busca-tipo">
             <option value="nome">Nome</option>
             <option value="id">Código</option>
         </select>
-    </label>
-    <input type="text" name="valor" placeholder="Digite o valor" required>
-    <button type="submit">Buscar</button>
-    <a href="usuarios.php"><button type="button">Listar Todos</button></a>
-</form>
+        <input type="text" id="busca-valor" placeholder="Filtrar usuários...">
+        <button type="button" onclick="buscarUsuarios()">Buscar</button>
+        <button type="button" class="btn-limpar-filtro" onclick="document.getElementById('busca-valor').value=''; buscarUsuarios();">Listar Todos</button>
+    </div>
+    <button type="button" class="btn-cadastrar" onclick="abrirModalUsuario()">+ Cadastrar Usuário</button>
+</div>
 
-<hr>
-<h3>Lista de Usuários <?php echo $buscaAtiva ? '(resultado da busca)' : ''; ?></h3>
-<?php if (empty($lista)): ?>
-    <p>Nenhum usuário encontrado.</p>
-<?php else: ?>
-    <table border="1" cellpadding="5">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Login</th>
-                <th>Perfil</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
+<table class="crud-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Login</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="tabela-body">
+    <?php if (empty($lista)): ?>
+        <tr><td colspan="4" class="sem-dados">Nenhum usuário encontrado.</td></tr>
+    <?php else: ?>
         <?php foreach ($lista as $u): ?>
-            <tr>
-                <td><?php echo $u->getId(); ?></td>
-                <td><?php echo htmlspecialchars($u->getNome()); ?></td>
-                <td><?php echo htmlspecialchars($u->getLogin()); ?></td>
-                <td><?php echo htmlspecialchars($u->getPerfil()); ?></td>
-                <td>
-                    <a href="usuarios.php?acao=editar&id=<?php echo $u->getId(); ?>">Editar</a>
-                    |
-                    <a href="usuarios.php?acao=deletar&id=<?php echo $u->getId(); ?>"
-                       onclick="return confirm('Confirma a exclusão do usuário <?php echo addslashes($u->getNome()); ?>?')">Excluir</a>
-                </td>
-            </tr>
+        <tr>
+            <td><?php echo $u->getId(); ?></td>
+            <td><?php echo htmlspecialchars($u->getNome()); ?></td>
+            <td><?php echo htmlspecialchars($u->getLogin()); ?></td>
+            <td>
+                <a href="usuarios.php?acao=editar&id=<?php echo $u->getId(); ?>" class="btn-acao btn-editar">Editar</a>
+                <a href="usuarios.php?acao=deletar&id=<?php echo $u->getId(); ?>" class="btn-acao btn-excluir"
+                   onclick="return confirm('Confirma a exclusão do usuário <?php echo addslashes($u->getNome()); ?>?')">Excluir</a>
+            </td>
+        </tr>
         <?php endforeach; ?>
-        </tbody>
-    </table>
+    <?php endif; ?>
+    </tbody>
+</table>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalUsuario">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitulo"><?php echo $isEdit ? 'Alterar Usuário' : 'Novo Usuário'; ?></h3>
+            <button type="button" class="modal-close" onclick="fecharModal()">&times;</button>
+        </div>
+        <form method="POST" action="usuarios.php">
+            <div class="modal-body">
+                <?php if ($usuarioEditar): ?>
+                    <input type="hidden" name="id" value="<?php echo $usuarioEditar->getId(); ?>">
+                <?php elseif (!empty($form_data) && $form_data['id']): ?>
+                    <input type="hidden" name="id" value="<?php echo (int)$form_data['id']; ?>">
+                <?php endif; ?>
+
+                <div class="form-group <?php echo isset($erros_campo['nome']) ? 'campo-erro' : ''; ?>">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars(valU('nome', $usuarioEditar, $form_data)); ?>">
+                    <?php if (isset($erros_campo['nome'])): ?>
+                        <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['nome']); ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo isset($erros_campo['login']) ? 'campo-erro' : ''; ?>">
+                    <label for="login">Login:</label>
+                    <input type="text" id="login" name="login" value="<?php echo htmlspecialchars(valU('login', $usuarioEditar, $form_data)); ?>">
+                    <?php if (isset($erros_campo['login'])): ?>
+                        <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['login']); ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo isset($erros_campo['senha']) ? 'campo-erro' : ''; ?>">
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha" name="senha">
+                    <?php if ($isEdit): ?><small>Deixe em branco para manter a senha atual</small><?php endif; ?>
+                    <?php if (isset($erros_campo['senha'])): ?>
+                        <span class="erro-campo"><?php echo htmlspecialchars($erros_campo['senha']); ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="fecharModal()">Cancelar</button>
+                <button type="submit"><?php echo $isEdit ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModalUsuario() {
+    document.getElementById('modalUsuario').classList.add('ativo');
+}
+function fecharModal() {
+    document.getElementById('modalUsuario').classList.remove('ativo');
+    // Se estava editando, limpa a URL
+    if (window.location.search.includes('editar')) {
+        window.history.replaceState({}, '', 'usuarios.php');
+    }
+}
+// Fechar ao clicar fora
+document.getElementById('modalUsuario').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+});
+
+// Abrir modal automaticamente se editando ou com erros
+<?php if ($abrirModal): ?>
+    abrirModalUsuario();
 <?php endif; ?>
+
+// Busca na tabela
+function buscarUsuarios() {
+    var tipo = document.getElementById('busca-tipo').value;
+    var valor = document.getElementById('busca-valor').value.trim();
+    window.location.href = valor ? 'usuarios.php?acao=buscar&tipo=' + tipo + '&valor=' + encodeURIComponent(valor) : 'usuarios.php';
+}
+document.getElementById('busca-valor').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') buscarUsuarios();
+});
+</script>
 </main>

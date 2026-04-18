@@ -6,15 +6,17 @@ class Usuario
     private $nome;
     private $login;
     private $senha;
-    private $perfil; // INTERNO ou ADMIN
+    private $clienteId;
+    private $fornecedorId;
 
-    public function __construct($id, $nome, $login, $senha, $perfil)
+    public function __construct($id = null, $nome = null, $login = null, $senha = null, $clienteId = null, $fornecedorId = null)
     {
         $this->id = $id;
         $this->nome = $nome;
         $this->login = $login;
         $this->senha = $senha;
-        $this->perfil = $perfil;
+        $this->clienteId = $clienteId;
+        $this->fornecedorId = $fornecedorId;
     }
 
     public function getId() { return $this->id; }
@@ -29,6 +31,9 @@ class Usuario
     public function getSenha() { return $this->senha; }
     public function setSenha($senha) { $this->senha = $senha; }
 
-    public function getPerfil() { return $this->perfil; }
-    public function setPerfil($perfil) { $this->perfil = $perfil; }
+    public function getClienteId() { return $this->clienteId; }
+    public function setClienteId($clienteId) { $this->clienteId = $clienteId; }
+
+    public function getFornecedorId() { return $this->fornecedorId; }
+    public function setFornecedorId($fornecedorId) { $this->fornecedorId = $fornecedorId; }
 }

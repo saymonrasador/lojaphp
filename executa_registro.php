@@ -53,7 +53,18 @@ if ($usuarioExistente) {
 
 // Cria o novo usuário (com hash da senha)
 $senhaHash = md5($senha);
-$usuario = new Usuario(null, $nome, $login, $senhaHash, 'INTERNO');
+
+// Primeiro cria um cliente vinculado
+$clienteDao = $factory->getClienteDao();
+$cliente = new Cliente(null, $nome, null, $login, null, null);
+if ($clienteDao->insere($cliente)) {
+    $clienteCriado = $clienteDao->buscaPorEmail($login);
+    $clienteId = $clienteCriado ? $clienteCriado->getId() : null;
+} else {
+    $clienteId = null;
+}
+
+$usuario = new Usuario(null, $nome, $login, $senhaHash, $clienteId, null);
 
 // Tenta inserir no banco
 if ($dao->insere($usuario)) {
@@ -63,6 +74,8 @@ if ($dao->insere($usuario)) {
     if ($usuarioInserido) {
         $_SESSION["id_usuario"] = $usuarioInserido->getId();
         $_SESSION["nome_usuario"] = stripslashes($usuarioInserido->getNome());
+        $_SESSION["cliente_id"] = $usuarioInserido->getClienteId();
+        $_SESSION["fornecedor_id"] = $usuarioInserido->getFornecedorId();
         $_SESSION["mensagem"] = "Conta criada com sucesso! Bem-vindo!";
         header("Location: index.php");
         exit;

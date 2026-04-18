@@ -9,13 +9,13 @@ class Cliente
     private $cartaoCredito;
     private $endereco; // objeto Endereco
 
-    public function __construct($id, $nome, $telefone, $email, CartaoCredito $cartaoCredito, Endereco $endereco)
+    public function __construct($id = null, $nome = null, $telefone = null, $email = null, $cartaoCredito = null, $endereco = null)
     {
         $this->id = $id;
         $this->nome = $nome;
         $this->telefone = $telefone;
         $this->email = $email;
-        $this->senha = $senha;
+        $this->cartaoCredito = $cartaoCredito;
         $this->endereco = $endereco;
     }
 
@@ -32,8 +32,8 @@ class Cliente
     public function setEmail($email) { $this->email = $email; }
 
     public function getCartaoCredito() { return $this->cartaoCredito; }
-    public function setCartaoCredito(CartaoCredito $cartaoCredito) { $this->cartaoCredito = $cartaoCredito; }
+    public function setCartaoCredito($cartaoCredito) { $this->cartaoCredito = $cartaoCredito; }
 
     public function getEndereco() { return $this->endereco; }
-    public function setEndereco(Endereco $endereco) { $this->endereco = $endereco; }
+    public function setEndereco($endereco) { $this->endereco = $endereco; }
 }

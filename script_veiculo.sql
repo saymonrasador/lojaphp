@@ -14,18 +14,6 @@ CREATE TABLE enderecos (
 
 
 -- =========================================
--- TABELA: USUARIO (INTERNO)
--- =========================================
-CREATE TABLE usuarios (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    login VARCHAR(100) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL,
-    perfil VARCHAR(20) NOT NULL CHECK (perfil IN ('ADMIN', 'INTERNO'))
-);
-
-
--- =========================================
 -- TABELA: CLIENTE
 -- =========================================
 CREATE TABLE clientes (
@@ -33,7 +21,8 @@ CREATE TABLE clientes (
     nome VARCHAR(150) NOT NULL,
     telefone VARCHAR(50),
     email VARCHAR(150) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL,
+    senha VARCHAR(255),
+    cartao_credito VARCHAR(50),
     endereco_id INT,
 
     CONSTRAINT fk_cliente_endereco
@@ -57,6 +46,29 @@ CREATE TABLE fornecedores (
     CONSTRAINT fk_fornecedor_endereco
         FOREIGN KEY (endereco_id)
         REFERENCES enderecos(id)
+        ON DELETE SET NULL
+);
+
+
+-- =========================================
+-- TABELA: USUARIO (INTERNO)
+-- =========================================
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    login VARCHAR(100) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    cliente_id INT,
+    fornecedor_id INT,
+
+    CONSTRAINT fk_usuario_cliente
+        FOREIGN KEY (cliente_id)
+        REFERENCES clientes(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_usuario_fornecedor
+        FOREIGN KEY (fornecedor_id)
+        REFERENCES fornecedores(id)
         ON DELETE SET NULL
 );
 

@@ -1,111 +1,357 @@
 /* === CRUD PAGES (usuarios, fornecedores, produtos) === */
 
-/* Card wrapper for form & search sections */
-main > h2 {
-    margin-bottom: 6px;
+/* Full-screen layout */
+main.crud-main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
-main > p > a {
+/* Top bar: filters left, button right */
+.crud-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.crud-topbar h2 {
+    width: 100%;
+    margin-bottom: 4px;
     color: #2d3277;
-    font-size: 14px;
+    font-size: 22px;
 }
 
-/* Success / Error messages */
-main > p > strong {
-    display: block;
-    padding: 10px 14px;
-    border-radius: 4px;
-    font-size: 14px;
-    margin-bottom: 12px;
+.crud-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-/* Form section */
-form {
-    background-color: #fff;
-    padding: 20px 24px;
+.crud-filters select,
+.crud-filters input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    margin-bottom: 10px;
+    font-size: 14px;
+    background: #fff;
 }
 
-form label {
-    margin-bottom: 10px;
+.crud-filters input[type="text"] {
+    min-width: 220px;
 }
 
-form label input,
-form label select {
-    margin-top: 4px;
+.crud-filters button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    background: #2d3277;
+    color: #fff;
+    transition: background 0.2s;
 }
 
-form button[type="submit"] {
-    background-color: #ffe600;
+.crud-filters button:hover {
+    background: #1e2260;
+}
+
+.crud-filters .btn-limpar-filtro {
+    background: #e0e0e0;
     color: #333;
+}
+
+.crud-filters .btn-limpar-filtro:hover {
+    background: #ccc;
+}
+
+.btn-cadastrar {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
     font-weight: 700;
-    padding: 8px 24px;
+    background: #27ae60;
+    color: #fff;
+    transition: background 0.2s;
+}
+
+.btn-cadastrar:hover {
+    background: #219a52;
+}
+
+/* Messages */
+.msg-sucesso {
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    font-weight: 500;
+}
+
+.msg-erro {
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    font-weight: 500;
+}
+
+/* Full-width table */
+.crud-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.crud-table thead th {
+    background: #2d3277;
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.crud-table tbody td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.crud-table tbody tr:hover {
+    background: #f8f9ff;
+}
+
+.crud-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.crud-table .sem-dados {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 15px;
+}
+
+/* Action buttons in table */
+.btn-acao {
+    padding: 5px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0 2px;
+    transition: background 0.2s;
 }
 
-form button[type="submit"]:hover {
-    background-color: #f5d800;
-}
-
-form button[type="button"] {
-    background-color: #e0e0e0;
-    color: #333;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 6px;
-}
-
-form button[type="button"]:hover {
-    background-color: #ccc;
-}
-
-/* Search section */
-form[action*="?"] button[type="submit"],
-form button[type="submit"].buscar {
-    background-color: #2d3277;
+.btn-editar {
+    background: #3498db;
     color: #fff;
 }
 
-/* Table actions */
-table td:last-child {
-    white-space: nowrap;
+.btn-editar:hover {
+    background: #2980b9;
 }
 
-table td a {
-    margin: 0 2px;
+.btn-excluir {
+    background: #e74c3c;
+    color: #fff;
 }
 
-/* === FORM GROUP === */
-.form-group {
+.btn-excluir:hover {
+    background: #c0392b;
+}
+
+/* === MODAL OVERLAY === */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+    overflow-y: auto;
+}
+
+.modal-overlay.ativo {
+    display: flex;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 550px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    animation: modalIn 0.25s ease-out;
+    margin-bottom: 40px;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2d3277;
+    font-size: 18px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body fieldset {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.modal-body fieldset legend {
+    font-weight: 600;
+    color: #2d3277;
+    padding: 0 8px;
+    font-size: 14px;
+}
+
+/* Form inside modal */
+.modal-body .form-group {
     margin-bottom: 14px;
 }
 
-.form-group label {
+.modal-body .form-group label {
     display: block;
     font-weight: 600;
     margin-bottom: 4px;
     color: #444;
+    font-size: 13px;
+}
+
+.modal-body .form-group input,
+.modal-body .form-group select,
+.modal-body .form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.modal-body .form-group input:focus,
+.modal-body .form-group select:focus {
+    border-color: #2d3277;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(45,50,119,0.15);
+}
+
+.modal-body .form-group small {
+    display: block;
+    color: #888;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
+    background: #f8f9fa;
+    border-radius: 0 0 10px 10px;
+}
+
+.modal-footer button[type="submit"] {
+    background-color: #27ae60;
+    color: #fff;
+    font-weight: 700;
+    padding: 10px 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.modal-footer button[type="submit"]:hover {
+    background-color: #219a52;
+}
+
+.modal-footer button[type="button"] {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.modal-footer button[type="button"]:hover {
+    background-color: #ccc;
 }
 
 /* === FIELD ERROR STYLES === */
 .campo-erro input,
 .campo-erro select,
 .campo-erro textarea {
-    border: 2px solid #e74c3c;
-    background-color: #fef2f2;
+    border: 2px solid #e74c3c !important;
+    background-color: #fef2f2 !important;
 }
 
 .campo-erro input:focus,
 .campo-erro select:focus {
-    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
-    border-color: #e74c3c;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+    border-color: #e74c3c !important;
 }
 
 .erro-campo {
@@ -114,4 +360,30 @@ table td a {
     font-size: 12px;
     margin-top: 4px;
     font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .crud-topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .crud-filters {
+        flex-direction: column;
+    }
+    .crud-filters input[type="text"] {
+        min-width: auto;
+        width: 100%;
+    }
+    .modal-content {
+        margin: 0 10px;
+        max-width: calc(100% - 20px);
+    }
+    .crud-table {
+        font-size: 13px;
+    }
+    .crud-table thead th,
+    .crud-table tbody td {
+        padding: 8px 10px;
+    }
 }

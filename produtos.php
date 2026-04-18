@@ -96,65 +96,35 @@ if (isset($_SESSION['erro_produto'])) {
 
 // Lista de fornecedores para o select
 $todosFornecedores = $fornecedorDao->buscaTodos();
+$isEdit = $produtoEditar !== null;
+$abrirModal = $isEdit || !empty($erro);
 ?>
 <?php $page_css = ['libs/css/crud.css']; include_once "layout_header.php"; ?>
 
-<main>
-<h2>Cadastro de Produtos</h2>
-
-<p><a href="index.php">« Voltar ao Início</a></p>
+<main class="crud-main">
 
 <?php if ($mensagem): ?>
-    <p><strong><?php echo htmlspecialchars($mensagem); ?></strong></p>
+    <p class="msg-sucesso"><?php echo htmlspecialchars($mensagem); ?></p>
 <?php endif; ?>
 <?php if ($erro): ?>
-    <p><strong>Erro: <?php echo htmlspecialchars($erro); ?></strong></p>
+    <p class="msg-erro"><?php echo htmlspecialchars($erro); ?></p>
 <?php endif; ?>
 
-<hr>
-<h3><?php echo $produtoEditar ? 'Alterar Produto' : 'Novo Produto'; ?></h3>
-<form method="POST" action="produtos.php">
-    <?php if ($produtoEditar): ?>
-        <input type="hidden" name="id" value="<?php echo $produtoEditar->getId(); ?>">
-    <?php endif; ?>
-
-    <label>Nome: <input type="text" name="nome" value="<?php echo htmlspecialchars($produtoEditar ? $produtoEditar->getNome() : ''); ?>" required></label><br><br>
-    <label>Descrição: <input type="text" name="descricao" value="<?php echo htmlspecialchars($produtoEditar ? $produtoEditar->getDescricao() : ''); ?>"></label><br><br>
-    <label>Fornecedor:
-        <select name="fornecedor_id" required>
-            <option value="">-- Selecione --</option>
-            <?php foreach ($todosFornecedores as $f): ?>
-                <option value="<?php echo $f->getId(); ?>"
-                    <?php echo ($produtoEditar && $produtoEditar->getFornecedor() && $produtoEditar->getFornecedor()->getId() == $f->getId()) ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($f->getNome()); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label><br><br>
-
-    <button type="submit"><?php echo $produtoEditar ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
-    <?php if ($produtoEditar): ?>
-        <a href="produtos.php"><button type="button">Cancelar</button></a>
-    <?php endif; ?>
-</form>
-
-<hr>
-<h3>Consultar Produtos</h3>
-<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-    <label>Buscar por:
+<div class="crud-topbar">
+    <h2>Produtos</h2>
+    <div class="crud-filters">
         <select id="busca-tipo">
             <option value="nome">Nome</option>
             <option value="id">Código</option>
         </select>
-    </label>
-    <input type="text" id="busca-valor" placeholder="Digite para filtrar..." style="min-width:200px;">
-    <button type="button" id="btn-limpar">Listar Todos</button>
-    <span id="busca-status" style="color:#888; font-size:0.9em;"></span>
+        <input type="text" id="busca-valor" placeholder="Filtrar produtos...">
+        <button type="button" id="btn-buscar">Buscar</button>
+        <button type="button" class="btn-limpar-filtro" id="btn-limpar">Listar Todos</button>
+    </div>
+    <button type="button" class="btn-cadastrar" onclick="abrirModalProduto()">+ Cadastrar Produto</button>
 </div>
 
-<hr>
-<h3>Lista de Produtos</h3>
-<table border="1" cellpadding="5">
+<table class="crud-table">
     <thead>
         <tr>
             <th>ID</th>
@@ -165,46 +135,104 @@ $todosFornecedores = $fornecedorDao->buscaTodos();
         </tr>
     </thead>
     <tbody id="tabela-produtos-body">
-    <?php foreach ($lista as $p): ?>
+    <?php if (empty($lista)): ?>
+        <tr><td colspan="5" class="sem-dados">Nenhum produto encontrado.</td></tr>
+    <?php else: ?>
+        <?php foreach ($lista as $p): ?>
         <tr>
             <td><?php echo $p->getId(); ?></td>
             <td><?php echo htmlspecialchars($p->getNome()); ?></td>
             <td><?php echo htmlspecialchars($p->getDescricao()); ?></td>
             <td><?php echo $p->getFornecedor() ? htmlspecialchars($p->getFornecedor()->getNome()) : '-'; ?></td>
             <td>
-                <a href="produtos.php?acao=editar&id=<?php echo $p->getId(); ?>">Editar</a>
-                |
-                <a href="produtos.php?acao=deletar&id=<?php echo $p->getId(); ?>"
+                <a href="produtos.php?acao=editar&id=<?php echo $p->getId(); ?>" class="btn-acao btn-editar">Editar</a>
+                <a href="produtos.php?acao=deletar&id=<?php echo $p->getId(); ?>" class="btn-acao btn-excluir"
                    onclick="return confirm('Confirma a exclusão do produto <?php echo addslashes($p->getNome()); ?>?')">Excluir</a>
             </td>
         </tr>
-    <?php endforeach; ?>
-    <?php if (empty($lista)): ?>
-        <tr><td colspan="5">Nenhum produto encontrado.</td></tr>
+        <?php endforeach; ?>
     <?php endif; ?>
     </tbody>
 </table>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><?php echo $isEdit ? 'Alterar Produto' : 'Novo Produto'; ?></h3>
+            <button type="button" class="modal-close" onclick="fecharModal()">&times;</button>
+        </div>
+        <form method="POST" action="produtos.php">
+            <div class="modal-body">
+                <?php if ($produtoEditar): ?>
+                    <input type="hidden" name="id" value="<?php echo $produtoEditar->getId(); ?>">
+                <?php endif; ?>
+
+                <div class="form-group">
+                    <label for="p_nome">Nome:</label>
+                    <input type="text" id="p_nome" name="nome" required value="<?php echo htmlspecialchars($produtoEditar ? $produtoEditar->getNome() : ''); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="p_descricao">Descrição:</label>
+                    <input type="text" id="p_descricao" name="descricao" value="<?php echo htmlspecialchars($produtoEditar ? $produtoEditar->getDescricao() : ''); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="p_fornecedor">Fornecedor:</label>
+                    <select id="p_fornecedor" name="fornecedor_id" required>
+                        <option value="">-- Selecione --</option>
+                        <?php foreach ($todosFornecedores as $f): ?>
+                            <option value="<?php echo $f->getId(); ?>"
+                                <?php echo ($produtoEditar && $produtoEditar->getFornecedor() && $produtoEditar->getFornecedor()->getId() == $f->getId()) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($f->getNome()); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="fecharModal()">Cancelar</button>
+                <button type="submit"><?php echo $isEdit ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+function abrirModalProduto() {
+    document.getElementById('modalProduto').classList.add('ativo');
+}
+function fecharModal() {
+    document.getElementById('modalProduto').classList.remove('ativo');
+    if (window.location.search.includes('editar')) {
+        window.history.replaceState({}, '', 'produtos.php');
+    }
+}
+document.getElementById('modalProduto').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+});
+
+<?php if ($abrirModal): ?>
+    abrirModalProduto();
+<?php endif; ?>
+
+// Busca AJAX
 (function () {
     var inputValor  = document.getElementById('busca-valor');
     var selectTipo  = document.getElementById('busca-tipo');
     var tbody       = document.getElementById('tabela-produtos-body');
+    var btnBuscar   = document.getElementById('btn-buscar');
     var btnLimpar   = document.getElementById('btn-limpar');
-    var statusEl    = document.getElementById('busca-status');
     var debounceTimer = null;
 
     function esc(str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function renderTabela(dados) {
         if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">Nenhum produto encontrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="sem-dados">Nenhum produto encontrado.</td></tr>';
             return;
         }
         tbody.innerHTML = dados.map(function (p) {
@@ -215,45 +243,27 @@ $todosFornecedores = $fornecedorDao->buscaTodos();
                 '<td>' + esc(p.descricao) + '</td>' +
                 '<td>' + esc(p.fornecedor) + '</td>' +
                 '<td>' +
-                    '<a href="produtos.php?acao=editar&id=' + esc(p.id) + '">Editar</a>' +
-                    ' | ' +
-                    '<a href="produtos.php?acao=deletar&id=' + esc(p.id) + '" ' +
+                    '<a href="produtos.php?acao=editar&id=' + esc(p.id) + '" class="btn-acao btn-editar">Editar</a>' +
+                    '<a href="produtos.php?acao=deletar&id=' + esc(p.id) + '" class="btn-acao btn-excluir" ' +
                         'onclick="return confirm(\'Confirma a exclusão do produto ' + nomeSafe + '?\')">Excluir</a>' +
-                '</td>' +
-            '</tr>';
+                '</td></tr>';
         }).join('');
     }
 
     function buscar() {
         var tipo  = selectTipo.value;
         var valor = inputValor.value.trim();
-        statusEl.textContent = 'Buscando...';
-
         fetch('ajax_busca_produtos.php?tipo=' + encodeURIComponent(tipo) + '&valor=' + encodeURIComponent(valor))
             .then(function (res) { return res.json(); })
-            .then(function (dados) {
-                statusEl.textContent = '';
-                renderTabela(dados);
-            })
-            .catch(function () {
-                statusEl.textContent = 'Erro ao buscar.';
-            });
+            .then(function (dados) { renderTabela(dados); })
+            .catch(function () {});
     }
 
-    // Dispara automaticamente ao digitar (debounce de 300ms)
     inputValor.addEventListener('input', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(buscar, 300);
     });
-
-    // Refaz a busca ao trocar o tipo
-    selectTipo.addEventListener('change', function () {
-        if (inputValor.value.trim() !== '') {
-            buscar();
-        }
-    });
-
-    // Limpa e lista todos
+    btnBuscar.addEventListener('click', buscar);
     btnLimpar.addEventListener('click', function () {
         inputValor.value = '';
         buscar();

@@ -1,0 +1,147 @@
+/* === PERFIL PAGE === */
+.perfil-main {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.perfil-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    padding: 30px;
+    margin-bottom: 24px;
+}
+
+.perfil-card h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #2d3277;
+}
+
+.perfil-card h3 {
+    margin-top: 20px;
+    margin-bottom: 12px;
+    color: #444;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
+}
+
+.perfil-form-group {
+    margin-bottom: 14px;
+}
+
+.perfil-form-group label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.perfil-form-group input,
+.perfil-form-group textarea,
+.perfil-form-group select {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.perfil-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.perfil-form-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.perfil-form-row .perfil-form-group {
+    flex: 1;
+    min-width: 140px;
+}
+
+.perfil-info {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.perfil-info strong {
+    color: #333;
+}
+
+.btn-salvar {
+    background-color: #2d3277;
+    color: #fff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-salvar:hover {
+    background-color: #1a1f5e;
+}
+
+.btn-fornecedor {
+    display: inline-block;
+    background-color: #f5c518;
+    color: #333;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background-color 0.2s, transform 0.1s;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-fornecedor:hover {
+    background-color: #e0b000;
+    transform: scale(1.01);
+}
+
+.perfil-badge {
+    display: inline-block;
+    background-color: #d4edda;
+    color: #155724;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.perfil-badge.fornecedor {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.btn-editar-endereco {
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.btn-editar-endereco:hover {
+    background-color: #e0a800;
+}

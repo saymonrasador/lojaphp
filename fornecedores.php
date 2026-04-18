@@ -183,13 +183,11 @@ function valF($campo, $fornecedorEditar, $endEditar, $form_data) {
     return '';
 }
 $isEdit = $fornecedorEditar || (!empty($form_data) && isset($form_data['id']) && $form_data['id']);
+$abrirModal = $isEdit || !empty($erros_campo);
 ?>
 <?php $page_css = ['libs/css/crud.css']; include_once "layout_header.php"; ?>
 
-<main>
-<h2>Cadastro de Fornecedores</h2>
-
-<p><a href="index.php">« Voltar ao Início</a></p>
+<main class="crud-main">
 
 <?php if ($mensagem): ?>
     <p class="msg-sucesso"><?php echo htmlspecialchars($mensagem); ?></p>
@@ -198,138 +196,168 @@ $isEdit = $fornecedorEditar || (!empty($form_data) && isset($form_data['id']) &&
     <p class="msg-erro"><?php echo htmlspecialchars($erro); ?></p>
 <?php endif; ?>
 
-<hr>
-<h3><?php echo $isEdit ? 'Alterar Fornecedor' : 'Novo Fornecedor'; ?></h3>
-<form method="POST" action="fornecedores.php">
-    <?php if ($fornecedorEditar): ?>
-        <input type="hidden" name="id" value="<?php echo $fornecedorEditar->getId(); ?>">
-        <?php if ($endEditar): ?>
-            <input type="hidden" name="endereco_id" value="<?php echo $endEditar->getId(); ?>">
-        <?php endif; ?>
-    <?php elseif (!empty($form_data) && $form_data['id']): ?>
-        <input type="hidden" name="id" value="<?php echo (int)$form_data['id']; ?>">
-        <?php if (isset($form_data['endereco_id']) && $form_data['endereco_id']): ?>
-            <input type="hidden" name="endereco_id" value="<?php echo (int)$form_data['endereco_id']; ?>">
-        <?php endif; ?>
-    <?php endif; ?>
-
-    <fieldset>
-        <legend>Dados do Fornecedor</legend>
-        <div class="form-group <?php echo isset($erros_campo['nome']) ? 'campo-erro' : ''; ?>">
-            <label for="f_nome">Nome:</label>
-            <input type="text" id="f_nome" name="nome" value="<?php echo htmlspecialchars(valF('nome', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['nome'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['nome']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group">
-            <label for="f_descricao">Descrição:</label>
-            <input type="text" id="f_descricao" name="descricao" value="<?php echo htmlspecialchars(valF('descricao', $fornecedorEditar, $endEditar, $form_data)); ?>">
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['telefone']) ? 'campo-erro' : ''; ?>">
-            <label for="f_telefone">Telefone:</label>
-            <input type="text" id="f_telefone" name="telefone" value="<?php echo htmlspecialchars(valF('telefone', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['telefone'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['telefone']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['email']) ? 'campo-erro' : ''; ?>">
-            <label for="f_email">E-mail:</label>
-            <input type="email" id="f_email" name="email" value="<?php echo htmlspecialchars(valF('email', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['email'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['email']); ?></span><?php endif; ?>
-        </div>
-    </fieldset>
-
-    <br>
-    <fieldset>
-        <legend>Endereço</legend>
-        <div class="form-group <?php echo isset($erros_campo['rua']) ? 'campo-erro' : ''; ?>">
-            <label for="f_rua">Rua:</label>
-            <input type="text" id="f_rua" name="rua" value="<?php echo htmlspecialchars(valF('rua', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['rua'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['rua']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['numero']) ? 'campo-erro' : ''; ?>">
-            <label for="f_numero">Número:</label>
-            <input type="text" id="f_numero" name="numero" value="<?php echo htmlspecialchars(valF('numero', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['numero'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['numero']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group">
-            <label for="f_complemento">Complemento:</label>
-            <input type="text" id="f_complemento" name="complemento" value="<?php echo htmlspecialchars(valF('complemento', $fornecedorEditar, $endEditar, $form_data)); ?>">
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['bairro']) ? 'campo-erro' : ''; ?>">
-            <label for="f_bairro">Bairro:</label>
-            <input type="text" id="f_bairro" name="bairro" value="<?php echo htmlspecialchars(valF('bairro', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['bairro'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['bairro']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['cep']) ? 'campo-erro' : ''; ?>">
-            <label for="f_cep">CEP:</label>
-            <input type="text" id="f_cep" name="cep" value="<?php echo htmlspecialchars(valF('cep', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['cep'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['cep']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['cidade']) ? 'campo-erro' : ''; ?>">
-            <label for="f_cidade">Cidade:</label>
-            <input type="text" id="f_cidade" name="cidade" value="<?php echo htmlspecialchars(valF('cidade', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['cidade'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['cidade']); ?></span><?php endif; ?>
-        </div>
-        <div class="form-group <?php echo isset($erros_campo['estado']) ? 'campo-erro' : ''; ?>">
-            <label for="f_estado">Estado:</label>
-            <input type="text" id="f_estado" name="estado" maxlength="2" value="<?php echo htmlspecialchars(valF('estado', $fornecedorEditar, $endEditar, $form_data)); ?>">
-            <?php if (isset($erros_campo['estado'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['estado']); ?></span><?php endif; ?>
-        </div>
-    </fieldset>
-
-    <br>
-    <button type="submit"><?php echo $isEdit ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
-    <?php if ($fornecedorEditar): ?>
-        <a href="fornecedores.php"><button type="button">Cancelar</button></a>
-    <?php endif; ?>
-</form>
-
-<hr>
-<h3>Consultar Fornecedores</h3>
-<form method="GET" action="fornecedores.php">
-    <input type="hidden" name="acao" value="buscar">
-    <label>Buscar por:
-        <select name="tipo">
+<div class="crud-topbar">
+    <h2>Fornecedores</h2>
+    <div class="crud-filters">
+        <select id="busca-tipo">
             <option value="nome">Nome</option>
             <option value="id">Código</option>
         </select>
-    </label>
-    <input type="text" name="valor" placeholder="Digite o valor" required>
-    <button type="submit">Buscar</button>
-    <a href="fornecedores.php"><button type="button">Listar Todos</button></a>
-</form>
+        <input type="text" id="busca-valor" placeholder="Filtrar fornecedores...">
+        <button type="button" onclick="buscarFornecedores()">Buscar</button>
+        <button type="button" class="btn-limpar-filtro" onclick="document.getElementById('busca-valor').value=''; buscarFornecedores();">Listar Todos</button>
+    </div>
+    <button type="button" class="btn-cadastrar" onclick="abrirModalFornecedor()">+ Cadastrar Fornecedor</button>
+</div>
 
-<hr>
-<h3>Lista de Fornecedores <?php echo $buscaAtiva ? '(resultado da busca)' : ''; ?></h3>
-<?php if (empty($lista)): ?>
-    <p>Nenhum fornecedor encontrado.</p>
-<?php else: ?>
-    <table border="1" cellpadding="5">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Telefone</th>
-                <th>E-mail</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
+<table class="crud-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php if (empty($lista)): ?>
+        <tr><td colspan="6" class="sem-dados">Nenhum fornecedor encontrado.</td></tr>
+    <?php else: ?>
         <?php foreach ($lista as $f): ?>
-            <tr>
-                <td><?php echo $f->getId(); ?></td>
-                <td><?php echo htmlspecialchars($f->getNome()); ?></td>
-                <td><?php echo htmlspecialchars($f->getDescricao()); ?></td>
-                <td><?php echo htmlspecialchars($f->getTelefone()); ?></td>
-                <td><?php echo htmlspecialchars($f->getEmail()); ?></td>
-                <td>
-                    <a href="fornecedores.php?acao=editar&id=<?php echo $f->getId(); ?>">Editar</a>
-                    |
-                    <a href="fornecedores.php?acao=deletar&id=<?php echo $f->getId(); ?>"
-                       onclick="return confirm('Confirma a exclusão do fornecedor <?php echo addslashes($f->getNome()); ?>?')">Excluir</a>
-                </td>
-            </tr>
+        <tr>
+            <td><?php echo $f->getId(); ?></td>
+            <td><?php echo htmlspecialchars($f->getNome() ?? ''); ?></td>
+            <td><?php echo htmlspecialchars($f->getDescricao() ?? ''); ?></td>
+            <td><?php echo htmlspecialchars($f->getTelefone() ?? ''); ?></td>
+            <td><?php echo htmlspecialchars($f->getEmail() ?? ''); ?></td>
+            <td>
+                <a href="fornecedores.php?acao=editar&id=<?php echo $f->getId(); ?>" class="btn-acao btn-editar">Editar</a>
+                <a href="fornecedores.php?acao=deletar&id=<?php echo $f->getId(); ?>" class="btn-acao btn-excluir"
+                   onclick="return confirm('Confirma a exclusão do fornecedor <?php echo addslashes($f->getNome()); ?>?')">Excluir</a>
+            </td>
+        </tr>
         <?php endforeach; ?>
-        </tbody>
-    </table>
+    <?php endif; ?>
+    </tbody>
+</table>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalFornecedor">
+    <div class="modal-content" style="max-width:650px;">
+        <div class="modal-header">
+            <h3><?php echo $isEdit ? 'Alterar Fornecedor' : 'Novo Fornecedor'; ?></h3>
+            <button type="button" class="modal-close" onclick="fecharModal()">&times;</button>
+        </div>
+        <form method="POST" action="fornecedores.php">
+            <div class="modal-body">
+                <?php if ($fornecedorEditar): ?>
+                    <input type="hidden" name="id" value="<?php echo $fornecedorEditar->getId(); ?>">
+                    <?php if ($endEditar): ?>
+                        <input type="hidden" name="endereco_id" value="<?php echo $endEditar->getId(); ?>">
+                    <?php endif; ?>
+                <?php elseif (!empty($form_data) && $form_data['id']): ?>
+                    <input type="hidden" name="id" value="<?php echo (int)$form_data['id']; ?>">
+                    <?php if (isset($form_data['endereco_id']) && $form_data['endereco_id']): ?>
+                        <input type="hidden" name="endereco_id" value="<?php echo (int)$form_data['endereco_id']; ?>">
+                    <?php endif; ?>
+                <?php endif; ?>
+
+                <fieldset>
+                    <legend>Dados do Fornecedor</legend>
+                    <div class="form-group <?php echo isset($erros_campo['nome']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_nome">Nome:</label>
+                        <input type="text" id="f_nome" name="nome" value="<?php echo htmlspecialchars(valF('nome', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['nome'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['nome']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="f_descricao">Descrição:</label>
+                        <input type="text" id="f_descricao" name="descricao" value="<?php echo htmlspecialchars(valF('descricao', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['telefone']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_telefone">Telefone:</label>
+                        <input type="text" id="f_telefone" name="telefone" value="<?php echo htmlspecialchars(valF('telefone', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['telefone'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['telefone']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['email']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_email">E-mail:</label>
+                        <input type="email" id="f_email" name="email" value="<?php echo htmlspecialchars(valF('email', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['email'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['email']); ?></span><?php endif; ?>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Endereço</legend>
+                    <div class="form-group <?php echo isset($erros_campo['rua']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_rua">Rua:</label>
+                        <input type="text" id="f_rua" name="rua" value="<?php echo htmlspecialchars(valF('rua', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['rua'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['rua']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['numero']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_numero">Número:</label>
+                        <input type="text" id="f_numero" name="numero" value="<?php echo htmlspecialchars(valF('numero', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['numero'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['numero']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="f_complemento">Complemento:</label>
+                        <input type="text" id="f_complemento" name="complemento" value="<?php echo htmlspecialchars(valF('complemento', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['bairro']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_bairro">Bairro:</label>
+                        <input type="text" id="f_bairro" name="bairro" value="<?php echo htmlspecialchars(valF('bairro', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['bairro'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['bairro']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['cep']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_cep">CEP:</label>
+                        <input type="text" id="f_cep" name="cep" value="<?php echo htmlspecialchars(valF('cep', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['cep'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['cep']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['cidade']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_cidade">Cidade:</label>
+                        <input type="text" id="f_cidade" name="cidade" value="<?php echo htmlspecialchars(valF('cidade', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['cidade'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['cidade']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group <?php echo isset($erros_campo['estado']) ? 'campo-erro' : ''; ?>">
+                        <label for="f_estado">Estado:</label>
+                        <input type="text" id="f_estado" name="estado" maxlength="2" value="<?php echo htmlspecialchars(valF('estado', $fornecedorEditar, $endEditar, $form_data)); ?>">
+                        <?php if (isset($erros_campo['estado'])): ?><span class="erro-campo"><?php echo htmlspecialchars($erros_campo['estado']); ?></span><?php endif; ?>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="fecharModal()">Cancelar</button>
+                <button type="submit"><?php echo $isEdit ? 'Salvar Alterações' : 'Cadastrar'; ?></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModalFornecedor() {
+    document.getElementById('modalFornecedor').classList.add('ativo');
+}
+function fecharModal() {
+    document.getElementById('modalFornecedor').classList.remove('ativo');
+    if (window.location.search.includes('editar')) {
+        window.history.replaceState({}, '', 'fornecedores.php');
+    }
+}
+document.getElementById('modalFornecedor').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+});
+
+<?php if ($abrirModal): ?>
+    abrirModalFornecedor();
 <?php endif; ?>
+
+function buscarFornecedores() {
+    var tipo = document.getElementById('busca-tipo').value;
+    var valor = document.getElementById('busca-valor').value.trim();
+    window.location.href = valor ? 'fornecedores.php?acao=buscar&tipo=' + tipo + '&valor=' + encodeURIComponent(valor) : 'fornecedores.php';
+}
+document.getElementById('busca-valor').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') buscarFornecedores();
+});
+</script>
 </main>

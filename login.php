@@ -8,6 +8,11 @@ if (is_session_started() === FALSE) {
 }
 
 $page_title = "Autenticação Obrigatória para acessar Veículos";
+
+// Salvar redirect do carrinho
+if (isset($_GET['redirect']) && $_GET['redirect'] === 'carrinho') {
+    $_SESSION['redirect_after_login'] = 'carrinho.php';
+}
 ?>
 
 <main>
@@ -52,7 +57,7 @@ $page_title = "Autenticação Obrigatória para acessar Veículos";
             </form>
 
             <div>
-                <p>Problema para acessar? <a href="index.php">Voltar para início</a></p>
+                <p>Não tem uma conta ainda? <a href="registro.php">Registre-se</a></p>
             </div>
         </div>
     </div>

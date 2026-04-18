@@ -34,9 +34,19 @@ if(!strcmp($senha, $usuario->getSenha()))
     // TUDO OK! Agora, passa os dados para a sessão e redireciona o usuário 
     $_SESSION["id_usuario"] = $usuario->getId(); 
     $_SESSION["nome_usuario"] = stripslashes($usuario->getNome());
+    $_SESSION["cliente_id"] = $usuario->getClienteId();
+    $_SESSION["fornecedor_id"] = $usuario->getFornecedorId();
     $_SESSION["mensagem"] = "Login realizado com sucesso! Bem-vindo " . $_SESSION["nome_usuario"]. "!";
     unset($_SESSION["erro"]); // Remove qualquer mensagem de erro anterior
     //$_SESSION["permissao"]= $dados["postar"]; 
+    
+    // Redirecionar para carrinho se veio de lá
+    if (isset($_SESSION['redirect_after_login'])) {
+        $redirect = $_SESSION['redirect_after_login'];
+        unset($_SESSION['redirect_after_login']);
+        header("Location: " . $redirect);
+        exit;
+    }
     header("Location: index.php"); 
     exit; 
 } else {
